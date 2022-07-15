@@ -96,13 +96,13 @@ jobs:
 
     wait-manual-approval:
       docker:
-        - image: circleci/node:12
+        - image: cimg/node:13.8.0
       steps:
         - run: printf "A hold job to wait for a manual approval"
 
     deploy-blue:
       docker:
-        - image: circleci/node:12
+        - image: cimg/node:13.8.0
         steps:
           - run: printf "Approved"
 
@@ -114,7 +114,7 @@ workflows:
           type: approval
           requires: [deploy-green]
       - deploy-blue:
-          requires: [deploy-green]
+          requires: [wait-manual-approval]
       #- run-lint
       #- build-and-push-docker-image:
           #requires: [run-lint]
