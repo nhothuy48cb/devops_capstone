@@ -17,7 +17,7 @@ jobs:
           command: |
             python3 -m venv .devops-capstone
             source .devops-capstone/bin/activate
-            make install
+            sudo make install
       - save_cache:
           paths:
             - ./.devops-capstone

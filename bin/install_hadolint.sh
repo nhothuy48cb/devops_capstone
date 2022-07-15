@@ -7,7 +7,7 @@ HADOLINT_FILE=https://github.com/hadolint/hadolint/releases/download/${VERSION}/
 test -e ./bin/hadolint ||
   {
     wget -qO ./bin/hadolint "${HADOLINT_FILE}"
-    sudo chmod +x ./bin/hadolint
+    chmod +x ./bin/hadolint
   }
 
 echo "./bin/hadolint: $(./bin/hadolint --version)"
