@@ -23,7 +23,8 @@ jobs:
             
             chmod -R +x ./bin/
             
-            echo "'"ls -l"
+            echo "pwd ls -l"
+            pwd
             ls -l
             
             echo 'make install'
