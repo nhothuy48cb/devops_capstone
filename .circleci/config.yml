@@ -40,17 +40,23 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - run:
-          name: Build Docker Image
+          name: Build & push docker image
           command: |
             export VERSION=$(<app/version.txt)
+            
             # Build docker image
             docker build -t flask-app app
-            # Tag
+            
+            # Tag image
             docker tag flask-app nhothuy48cb/flask-app:${VERSION}
             docker tag flask-app nhothuy48cb/flask-app:lastest
+            
             # Login to docker-hub
             docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-            # Push image
+            
+            # We publish two images with different version tags: 
+            # - numbered version
+            # - "latest"
             docker push nhothuy48cb/flask-app:${VERSION}
             docker push nhothuy48cb/flask-app:lastest
 
@@ -59,3 +65,4 @@ workflows:
     jobs:
       - run-lint
       - build-and-push-docker-image
+          requires: [run-lint]
