@@ -20,7 +20,10 @@ jobs:
           command: |
             python3 -m venv .devops-capstone
             source .devops-capstone/bin/activate
-            echo 'ls -l'
+            
+            chmod -R +x ./bin/
+            
+            echo "'"ls -l"
             ls -l
             
             echo 'make install'
