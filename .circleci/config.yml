@@ -32,22 +32,22 @@ jobs:
             source .devops-capstone/bin/activate
             make lint
 
-    build-docker-image:
-      docker:
-        - image: circleci/node:13.8.0
-      steps:
-        - checkout
-        - setup_remote_docker:
-            version: 19.03.13
-        - run:
-            name: Build Docker Image
-            command: |
-              export VERSION=$(<app/version.txt)
-              
-              echo "Version"
-              echo ${VERSION}
-              
-              make build-docker
+  build-docker-image:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          name: Build Docker Image
+          command: |
+            export VERSION=$(<app/version.txt)
+            
+            echo "Version"
+            echo ${VERSION}
+            
+            make build-docker
 
 workflows:
   default:
