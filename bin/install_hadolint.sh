@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-OS=$(uname)
-VERSION="v1.22.1"
-HADOLINT_FILE=https://github.com/hadolint/hadolint/releases/download/${VERSION}/hadolint-${OS}-x86_64
+HADOLINT_FILE=https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
 
 test -e ./bin/hadolint ||
   {
