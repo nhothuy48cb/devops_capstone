@@ -94,17 +94,17 @@ jobs:
             kubectl apply -f k8s/test-service.yaml
             kubectl get all
 
-    wait-manual-approval:
-      docker:
-        - image: cimg/node:13.8.0
-      steps:
-        - run: printf "A hold job to wait for a manual approval"
+  wait-manual-approval:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - run: printf "A hold job to wait for a manual approval"
 
-    deploy-blue:
-      docker:
-        - image: cimg/node:13.8.0
-      steps:
-          - run: printf "Approved"
+  deploy-blue:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - run: printf "Approved"
 
 workflows:
   default:
