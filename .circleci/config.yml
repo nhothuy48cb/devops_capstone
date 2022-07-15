@@ -4,7 +4,7 @@ orbs:
   docker: circleci/docker@2.1.2
 
 jobs:
-  init:
+  run-lint:
     docker:
       - image: python:3.7.3-stretch
     steps:
@@ -32,20 +32,24 @@ jobs:
             source .devops-capstone/bin/activate
             make lint
 
+    build-docker-image:
+      docker:
+        - image: circleci/node:13.8.0
+      steps:
+        - checkout
+        - setup_remote_docker:
+            version: 19.03.13
+        - run:
+            name: Build Docker Image
+            command: |
+              export VERSION=$(<app/version.txt)
+              
+              echo "Version"
+              echo ${VERSION}
+              
+              make build-docker
 workflows:
   default:
     jobs:
-      - init
-      - docker/publish:
-          matrix:
-            parameters:
-              image: [$DOCKER_LOGIN/flask-app]
-              path: [app]
-              docker-context: [app]
-              deploy: [true]
-              # We publish two images with different version tags:
-              # - numbered version
-              # - "latest"
-              tag: ['$(<app/version.txt)', 'latest']
-              update-description: [true]
-          requires: [init]
+      - run-lint
+      - build-docker-image
