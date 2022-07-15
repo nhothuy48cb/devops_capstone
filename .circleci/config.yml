@@ -1,0 +1,47 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.1.2
+
+jobs:
+  init:
+    docker:
+      - image: python:3.7.3-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "app/requirements.txt" }}
+      - run:
+          name: Install dependencies
+          command: |
+            python3 -m venv .devops-capstone
+            source .devops-capstone/bin/activate
+            make install
+      - save_cache:
+          paths:
+            - ./.devops-capstone
+          key: v1-dependencies-{{ checksum "app/requirements.txt" }}
+      - run:
+          name: Run lint
+          command: |
+            source .devops-capstone/bin/activate
+            make lint
+
+workflows:
+  default:
+    jobs:
+      - init
+      - docker/publish:
+          matrix:
+            parameters:
+              image: [$DOCKER_LOGIN/flask-app]
+              path: [app]
+              docker-context: [app]
+              deploy: [true]
+              # We publish two images with different version tags:
+              # - numbered version
+              # - "latest"
+              tag: ['$(<app/version.txt)', 'latest']
+              update-description: [true]
+          requires: [init]
