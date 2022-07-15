@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: nhothuy48cb/pre-production-flask-app
+        image: nhothuy48cb/flask-app
         ports:
         - containerPort: 80
