@@ -42,6 +42,7 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
+            chmod -R +x ./bin/
             export VERSION=$(<app/version.txt)
             
             echo "Version"
