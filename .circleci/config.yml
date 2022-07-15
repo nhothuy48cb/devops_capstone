@@ -32,7 +32,7 @@ jobs:
             source .devops-capstone/bin/activate
             make lint
 
-  build-docker-image:
+  build-and-push-docker-image:
     docker:
       - image: cimg/node:13.8.0
     steps:
@@ -42,16 +42,20 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            chmod -R +x ./bin/
             export VERSION=$(<app/version.txt)
-            
-            echo "Version"
-            echo ${VERSION}
-            
-            make build-docker
+            # Build docker image
+            docker build -t flask-app app
+            # Tag
+            docker tag flask-app nhothuy48cb/flask-app:${VERSION}
+            docker tag flask-app nhothuy48cb/flask-app:lastest
+            # Login to docker-hub
+            docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+            # Push image
+            docker push nhothuy48cb/flask-app:${VERSION}
+            docker push nhothuy48cb/flask-app:lastest
 
 workflows:
   default:
     jobs:
       - run-lint
-      - build-docker-image
+      - build-and-push-docker-image
