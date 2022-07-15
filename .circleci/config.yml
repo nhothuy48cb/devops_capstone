@@ -48,6 +48,7 @@ jobs:
               echo ${VERSION}
               
               make build-docker
+
 workflows:
   default:
     jobs:
