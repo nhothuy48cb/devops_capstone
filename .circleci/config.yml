@@ -6,7 +6,7 @@ orbs:
 jobs:
   init:
     docker:
-      - image: circleci/node:13.8.0
+      - image: python:3.7.3-stretch
     steps:
       - checkout
       # Download and cache dependencies
@@ -20,7 +20,7 @@ jobs:
           command: |
             python3 -m venv .devops-capstone
             source .devops-capstone/bin/activate
-            sudo make install
+            make install
       - save_cache:
           paths:
             - ./.devops-capstone
