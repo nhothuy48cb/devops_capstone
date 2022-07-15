@@ -62,7 +62,7 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     steps:
       - checkout
       - run:
@@ -96,8 +96,9 @@ jobs:
 workflows:
   default:
     jobs:
-      - run-lint
-      - build-and-push-docker-image:
-          requires: [run-lint]
-      - deploy:
-          requires: [build-and-push-docker-image]
+      - deploy
+      #- run-lint
+      #- build-and-push-docker-image:
+          #requires: [run-lint]
+      #- deploy:
+          #requires: [build-and-push-docker-image]
