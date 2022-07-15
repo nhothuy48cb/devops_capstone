@@ -60,7 +60,7 @@ jobs:
             docker push nhothuy48cb/flask-app:${VERSION}
             docker push nhothuy48cb/flask-app:lastest
 
-  deploy:
+  deploy-green:
     docker:
       - image: cimg/python:3.7.13
     steps:
@@ -94,10 +94,27 @@ jobs:
             kubectl apply -f k8s/test-service.yaml
             kubectl get all
 
+    wait-manual-approval:
+      docker:
+        - image: circleci/node:12
+      steps:
+        - run: printf "A hold job to wait for a manual approval"
+
+    deploy-blue:
+      docker:
+        - image: circleci/node:12
+        steps:
+          - run: printf "Approved"
+
 workflows:
   default:
     jobs:
-      - deploy
+      - deploy-green
+      - wait-manual-approval:
+          type: approval
+          requires: [deploy-green]
+      - deploy-blue:
+          requires: [deploy-green]
       #- run-lint
       #- build-and-push-docker-image:
           #requires: [run-lint]
