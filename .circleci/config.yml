@@ -18,16 +18,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            chmod -R +x ./bin/
             python3 -m venv .devops-capstone
             source .devops-capstone/bin/activate
-            
-            chmod -R +x ./bin/
-            
-            echo "pwd ls -l"
-            pwd
-            ls -l
-            
-            echo 'make install'
             make install
       - save_cache:
           paths:
