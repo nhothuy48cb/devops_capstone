@@ -34,7 +34,7 @@ jobs:
 
   build-docker-image:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - setup_remote_docker:
