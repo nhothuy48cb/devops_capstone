@@ -6,12 +6,15 @@ orbs:
 jobs:
   init:
     docker:
-      - image: python:3.7.3-stretch
+      - image: circleci/node:13.8.0
     steps:
       - checkout
+      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "app/requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run:
           name: Install dependencies
           command: |
