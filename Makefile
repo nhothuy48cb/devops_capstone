@@ -15,7 +15,7 @@ install:
 	# This should be run from inside a virtualenv
 	echo "Installing: dependencies..."
 	pip install --upgrade pip &&\
-		pip install -r requirements.txt
+		pip install -r ./app/requirements.txt
 	echo "Installing: hadolint"
 	./bin/install_hadolint.sh
 	
