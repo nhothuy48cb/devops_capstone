@@ -103,7 +103,7 @@ jobs:
     deploy-blue:
       docker:
         - image: cimg/node:13.8.0
-        steps:
+      steps:
           - run: printf "Approved"
 
 workflows:
