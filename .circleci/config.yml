@@ -40,7 +40,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - run:
-          name: Build & push docker image
+          name: Build and push docker image
           command: |
             export VERSION=$(<app/version.txt)
             
