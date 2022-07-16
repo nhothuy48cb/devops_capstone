@@ -12,7 +12,6 @@ nodeGroups:
   - name: flask-app
     instanceType: t2.small
     amiFamily: AmazonLinux2
-    # desiredCapacity: 2
     minSize: 2
     maxSize: 3
     volumeSize: 30

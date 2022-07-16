@@ -31,7 +31,7 @@ Capstone project for Udacity's "Cloud DevOps Engineer" Nanodegree Program.
 1. [Development](#development)
 2. [Setup kubernetes cluster](#setup-kubernetes-cluster)
 3. [Setup CircleCI](#setup-circleci)
-4. [CI/CD Pipeline](#ci/cd-pipeline)
+4. [CI/CD Pipeline](#cicd-pipeline)
 
 <hr>
 
@@ -65,10 +65,14 @@ Capstone project for Udacity's "Cloud DevOps Engineer" Nanodegree Program.
 - Install kubectl
 - Create Amazon EKS cluster:
   1. Create key pair: `key-pair-us-west-2` use to connect to nodes in cluster.
-  2. Use [infa/cluster.yaml](./infa/cluster.yaml) to create Amazon EKS cluster (name: `production`, region: `us-west-2`)
+  2. Use [infa/cluster.yaml](./infa/cluster.yaml) to create Amazon EKS cluster (take ~ 15-20 mins)
       ```
      $ eksctl create cluster -f infa/cluster.yaml
      ```
+     - Stacks:
+     ![cf_stack_eksctl_production_cluster.png](./screenshots/cf_stack_eksctl_production_cluster.png)
+     - Cluster:
+     ![eks_clusters_production.png](./screenshots/eks_clusters_production.png)
   3. Configure `kubectl` for Amazon EKS:
       ```
      $ aws eks --region us-west-2 update-kubeconfig --name production
@@ -78,17 +82,26 @@ Capstone project for Udacity's "Cloud DevOps Engineer" Nanodegree Program.
       ```
      $ kubectl get nodes
       ```
+     ![kubectl_get_nodes.png](./screenshots/kubectl_get_nodes.png)
 - Publish version 1.0:
-  1. Build and push docker image
-  2. Publish the version 1.0
-      ```
+  1. Build and push docker image version 1.0
+     ```
+     $ make build-docker
+     $ make upload-docker
+     ```
+  2. Publish the version 1.0 user docker image [nhothuy48cb/flask-app:1.0](https://hub.docker.com/layers/254101442/nhothuy48cb/flask-app/1.0/images/sha256-d9c17a79c90e4f386965bec9594121b99005c60b523b76629c043e88538edfa6?context=repo) (create a deployment `flask-app-1-0` using the [k8s/1.0/deployment.yaml](./k8s/1.0/deployment.yaml) file and create a service `flask-app` using the [k8s/1.0/service.yaml](./k8s/1.0/service.yaml) file)
+     ```
      $ kubectl apply -f k8s/1.0/deployment.yaml
      $ kubectl apply -f k8s/1.0/service.yaml
-      ```
+     ```
+     That is blue version 1.0
   3. Check result
      ```
      $ kubectl get all
      ```
+     ![kubectl_get_all_1.0.png](./screenshots/kubectl_get_all_1.0.png)
+     Go to ELB's URL to check flask-app version 1.0
+     ![flask_app_blue_1.0.png](./screenshots/flask_app_blue_1.0.png)
 <hr>
 
 ### Setup CircleCI
@@ -104,3 +117,6 @@ Add the following environment variables to your Circle CI project by navigating 
 <hr>
 
 ### CI/CD Pipeline
+Overview:
+![circleci_pipeline.png](./screenshots/circleci_pipeline.png)
+
