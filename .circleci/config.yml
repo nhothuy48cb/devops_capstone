@@ -159,13 +159,25 @@ jobs:
             echo "LABEL_VERSION: $LABEL_VERSION"
             
             # Remove the flask-app-x-x deployment
+            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app);
+            do
+              echo $each
+            done
+            echo "-2.0-"
+            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app | grep -v 2-0);
+            do
+              echo $each
+            done
             for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app | grep -v $LABEL_VERSION);
             do
               kubectl delete deployments $each
             done
             
             # Remove the flask-app-green service
-            kubectl delete services flask-app-green
+            if $(kubectl get services) | grep flask-app-green;
+            then
+              kubectl delete services flask-app-green
+            fi
 
 workflows:
   default:
