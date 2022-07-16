@@ -29,9 +29,9 @@ Capstone project for Udacity's "Cloud DevOps Engineer" Nanodegree Program.
 ## Project Steps
 
 1. [Development](#development)
-2. [Setup kubernetes cluster](#Setup kubernetes cluster)
-3. [Setup CircleCI](#Setup CircleCI)
-4. [CI/CD Pipeline](#CI/CD Pipeline)
+2. [Setup kubernetes cluster](#setup-kubernetes-cluster)
+3. [Setup CircleCI](#setup-circleci)
+4. [CI/CD Pipeline](#ci/cd-pipeline)
 
 <hr>
 
