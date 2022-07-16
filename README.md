@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/nhothuy48cb/devops_capstone.svg?style=svg)](https://app.circleci.com/pipelines/github/nhothuy48cb/devops_capstone)
 ## Project Overview
 
 Capstone project for Udacity's "Cloud DevOps Engineer" Nanodegree Program.
@@ -120,19 +121,26 @@ Add the following environment variables to your Circle CI project by navigating 
 Overview:
 ![circleci_pipeline.png](./screenshots/circleci_pipeline.png)
 Steps:
-- run-lint: use `hadolint` and `pylint`
+1. run-lint: use `hadolint` and `pylint`
   ![run_lint.png](./screenshots/run_lint.png)
   ![run_lint_failed.png](./screenshots/run_lint_failed.png)
-
-- build-and-push-docker-image: build and push docker image to https://hub.docker.com/
+2. build-and-push-docker-image: build and push docker image to https://hub.docker.com/
   ![build_publish_docker_image.png](./screenshots/build_publish_docker_image.png)
-
-- deploy-green
-
-- wait-manual-approval
-
-- deploy-new-blue
-
-- remove-old-blue
-
-
+  ![flask_app_docker_image.png](./screenshots/flask_app_docker_image.png)
+- Link to [flask-app Image](https://hub.docker.com/repository/docker/nhothuy48cb/flask-app/general)
+3. deploy-green: publish the new version as green
+- Using the blue/green deployment pattern, follow the [link](https://jeromedecoster.github.io/aws/kubernetes-eks-blue/green-deployment/).
+- Use [k8s/deployment.yaml](./k8s/deployment.yaml) file to create new deployment `flask-app-$LABEL_VERSION` (eg: flask-app-2-0, flask-app-2-1, ..).
+- Use [k8s/service-green.yaml](./k8s/service-green.yaml) file to create a new service (a new Load Balancer) `flask-app-green`, the service only for testing purposes.
+  ![kubectl_get_all_green.png](./screenshots/kubectl_get_all_green.png)
+- Green deployment:
+  ![flask_app_green_2.0.png](./screenshots/flask_app_green_2.0.png)
+- Blue deployment:
+  ![flask_app_blue_1.0.png](./screenshots/flask_app_blue_1.0.png)
+6. wait-manual-approval: wait manual approval to target the new version - new blue after verifying that our new version (green deployment) is working correctly.
+   ![approve_job.png](./screenshots/approve_job.png)
+7. deploy-new-blue: target the new version - new blue
+- Blue deployment:
+  ![flask_app_blue_2.0.png](./screenshots/flask_app_blue_2.0.png)
+8. remove-old-blue: free up the resources (with previous version)
+   ![kubectl_get_all_2.0.png](./screenshots/kubectl_get_all_2.0.png)
