@@ -152,25 +152,23 @@ jobs:
             # flask-app service target now labeled new version
             envsubst < k8s/service.yaml | kubectl apply --filename -
       - run:
-          name: Remove the old version
+          name: Remove the old version flask-app
           command: |
             export VERSION=$(<app/version.txt)
             export LABEL_VERSION=${VERSION/./-}
             echo "LABEL_VERSION: $LABEL_VERSION"
             
             # Remove the flask-app-x-x deployment
-            echo "-2.0-"
-            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app);
+            for deploy in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app);
             do
-              if [[ $each != flask-app-$LABEL_VERSION ]];
+              if [[ $deploy != flask-app-$LABEL_VERSION ]];
               then
-                  echo "Old version: $each"
+                kubectl delete deployments $deploy
               fi
-              #kubectl delete deployments $each
             done
             
             # Remove the flask-app-green service
-            if $(kubectl get services) | grep flask-app-green;
+            if kubectl get services | grep flask-app-green;
             then
               kubectl delete services flask-app-green
             fi
