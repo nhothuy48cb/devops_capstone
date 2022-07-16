@@ -160,21 +160,12 @@ jobs:
             
             # Remove the flask-app-x-x deployment
             echo "-2.0-"
-            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app);
+            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep -v flask-app-$LABEL_VERSION);
             do
-              if $each | grep 2-0;
-              then
-                echo "Current version: $each";
-              else
-                echo "Old version: $each";
-              fi
-            done
-            echo "-delete-"
-            
-            #for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app | grep -v $LABEL_VERSION);
-            #do
+              echo "Old version: $each";
               #kubectl delete deployments $each
-            #done
+            done
+            
             # Remove the flask-app-green service
             if $(kubectl get services) | grep flask-app-green;
             then
