@@ -48,8 +48,8 @@ jobs:
             docker build -t flask-app app
             
             # Tag image
-            docker tag flask-app nhothuy48cb/flask-app:${VERSION}
-            docker tag flask-app nhothuy48cb/flask-app:lastest
+            docker tag flask-app ${DOCKER_HUB_ID}/${DOCKER_REPOSITORY}:${VERSION}
+            docker tag flask-app ${DOCKER_HUB_ID}/${DOCKER_REPOSITORY}:lastest
             
             # Login to docker-hub
             docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
@@ -57,8 +57,8 @@ jobs:
             # We publish two images with different version tags: 
             # - numbered version
             # - "latest"
-            docker push nhothuy48cb/flask-app:${VERSION}
-            docker push nhothuy48cb/flask-app:lastest
+            docker push ${DOCKER_HUB_ID}/${DOCKER_REPOSITORY}:${VERSION}
+            docker push ${DOCKER_HUB_ID}/${DOCKER_REPOSITORY}:lastest
 
   deploy-green:
     docker:
@@ -68,7 +68,6 @@ jobs:
       - run:
           name: Install awscli and gettext-base
           command: |
-            sudo apt update
             sudo apt-get install awscli
             sudo apt-get install gettext-base
       - run:
@@ -88,23 +87,37 @@ jobs:
           command: |
             aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
       - run:
-          name: Deploy
+          name: Deploy new version as green
           command: |
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/test-service.yaml
-            kubectl get all
+            export VERSION=$(<app/version.txt)
+            export DOCKER_IMAGE=${DOCKER_HUB_ID}/${DOCKER_REPOSITORY}:${VERSION}
+            export LABEL_VERSION=${VERSION/./-}
+            
+            echo "DOCKER_IMAGE: $DOCKER_IMAGE"
+            echo "LABEL_VERSION: $LABEL_VERSION"
+            
+            envsubst < k8s/deployment.yaml | kubectl apply --filename -
+            
+            # service-green.yaml creates the flask-app-green service
+            envsubst < k8s/service-green.yaml | kubectl apply --filename -
+
+            sleep 5
+            LOAD_BALANCER=$(kubectl get services \
+              flask-app-green \
+              --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            echo "LOAD_BALANCER: $LOAD_BALANCER"
 
   wait-manual-approval:
     docker:
       - image: cimg/node:13.8.0
     steps:
-      - run: printf "A hold job to wait for a manual approval"
+      - run: echo "A hold job to wait for a manual approval"
 
   deploy-blue:
     docker:
       - image: cimg/node:13.8.0
     steps:
-      - run: printf "Approved"
+      - run: echo "Approved"
 
 workflows:
   default:

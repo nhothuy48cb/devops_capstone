@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pre-flask-app
-  labels:
-    app: pre-production-flask-app
+  name: flask-app-${LABEL_VERSION}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pre-production-flask-app
+      app: flask-app
+      version: ${LABEL_VERSION}
   template:
     metadata:
       labels:
-        app: pre-production-flask-app
+        app: flask-app
+        version: ${LABEL_VERSION}
     spec:
       containers:
       - name: flask-app
-        image: nhothuy48cb/flask-app:lastest
+        image: ${DOCKER_IMAGE}
         ports:
         - containerPort: 80
