@@ -133,19 +133,51 @@ jobs:
 
   deploy-blue:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/python:3.7.13
     steps:
-      - run: echo "Approved"
+      - checkout
+      - install-awscli-gettext
+      - install-aws-iam-authenticator
+      - install-kubectl
+      - run:
+          name: Connect to cluster
+          command: |
+            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
+      - run:
+          name: Target new version — new blue
+          command: |
+            export VERSION=$(<app/version.txt)
+            export LABEL_VERSION=${VERSION/./-}
+            echo "LABEL_VERSION: $LABEL_VERSION"
+            # flask-app service target now labeled new version
+            envsubst < k8s/service.yaml | kubectl apply --filename -
+      - run:
+          name: Remove the old version
+          command: |
+            export VERSION=$(<app/version.txt)
+            export LABEL_VERSION=${VERSION/./-}
+            echo "LABEL_VERSION: $LABEL_VERSION"
+            
+            # Remove the flask-app-x-x deployment
+            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app | grep -v $LABEL_VERSION);
+            do
+              #kubectl delete deployments $each
+              echo $each
+            done
+            
+            # Remove the flask-app-green service
+            kubectl delete services flask-app-green
 
 workflows:
   default:
     jobs:
-      - deploy-green
-      - wait-manual-approval:
-          type: approval
-          requires: [deploy-green]
-      - deploy-blue:
-          requires: [wait-manual-approval]
+      - deploy-blue
+      #- deploy-green
+      #- wait-manual-approval:
+          #type: approval
+          #requires: [deploy-green]
+      #- deploy-blue:
+          #requires: [wait-manual-approval]
       #- run-lint
       #- build-and-push-docker-image:
           #requires: [run-lint]
