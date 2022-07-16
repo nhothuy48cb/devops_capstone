@@ -162,14 +162,14 @@ jobs:
             echo "-all-"
             for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app);
             do
-              echo $each
+              echo "$each"
             done
             echo "-2.0-"
             for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app);
             do
               if $each | grep -v "2-0";
               then
-                echo $each;
+                echo "$each";
               fi
             done
             echo "-delete-"
@@ -177,7 +177,7 @@ jobs:
             do
               kubectl delete deployments $each
             done
-
+            
             # Remove the flask-app-green service
             if $(kubectl get services) | grep flask-app-green;
             then
