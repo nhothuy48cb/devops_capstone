@@ -4,22 +4,14 @@ orbs:
   docker: circleci/docker@2.1.2
 
 commands:
-  install-awscli:
-    description: Install awscli
+  install-awscli-gettext:
+    description: Install awscli and gettext-base
     steps:
       - run:
-          name: Install awscli
+          name: Install awscli and gettext-base
           command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-
-  install-gettext:
-    description: Install gettext-base
-    steps:
-      - run:
-          name: Install gettext-base
-          command: |
+            sudo apt update
+            sudo apt-get install awscli
             sudo apt-get install gettext-base
 
   install-aws-iam-authenticator:
@@ -105,8 +97,7 @@ jobs:
       - image: cimg/python:3.7.13
     steps:
       - checkout
-      - install-awscli
-      - install-gettext
+      - install-awscli-gettext
       - install-aws-iam-authenticator
       - install-kubectl
       - run:
@@ -145,8 +136,7 @@ jobs:
       - image: cimg/python:3.7.13
     steps:
       - checkout
-      - install-awscli
-      - install-gettext
+      - install-awscli-gettext
       - install-aws-iam-authenticator
       - install-kubectl
       - run:
@@ -167,8 +157,7 @@ jobs:
       - image: cimg/python:3.7.13
     steps:
       - checkout
-      - install-awscli
-      - install-gettext
+      - install-awscli-gettext
       - install-aws-iam-authenticator
       - install-kubectl
       - run:
@@ -201,7 +190,8 @@ workflows:
   default:
     jobs:
       - deploy-new-blue
-      - remove-old-blue
+      - remove-old-blue:
+          requires: [deploy-new-blue]
       #- deploy-green
       #- wait-manual-approval:
           #type: approval
