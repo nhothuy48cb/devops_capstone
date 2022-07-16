@@ -161,8 +161,7 @@ jobs:
             # Remove the flask-app-x-x deployment
             for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app | grep -v $LABEL_VERSION);
             do
-              #kubectl delete deployments $each
-              echo $each
+              kubectl delete deployments $each
             done
             
             # Remove the flask-app-green service
