@@ -119,4 +119,20 @@ Add the following environment variables to your Circle CI project by navigating 
 ### CI/CD Pipeline
 Overview:
 ![circleci_pipeline.png](./screenshots/circleci_pipeline.png)
+Steps:
+- run-lint: use `hadolint` and `pylint`
+  ![run_lint.png](./screenshots/run_lint.png)
+  ![run_lint_failed.png](./screenshots/run_lint_failed.png)
+
+- build-and-push-docker-image: build and push docker image to https://hub.docker.com/
+  ![build_publish_docker_image.png](./screenshots/build_publish_docker_image.png)
+
+- deploy-green
+
+- wait-manual-approval
+
+- deploy-new-blue
+
+- remove-old-blue
+
 

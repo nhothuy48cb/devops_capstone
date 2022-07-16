@@ -18,5 +18,3 @@ EXPOSE 80
 
 # Run app at container launch
 CMD ["python", "app.py"]
-
-make-run-lint-fail
