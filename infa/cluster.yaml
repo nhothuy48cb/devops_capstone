@@ -9,7 +9,7 @@ iam:
   withOIDC: true
 
 nodeGroups:
-  - name: ng-1
+  - name: flask-app
     instanceType: t2.small
     amiFamily: AmazonLinux2
     # desiredCapacity: 2

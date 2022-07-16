@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-1-0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-app
+      version: 1-0
+  template:
+    metadata:
+      labels:
+        app: flask-app
+        version: 1-0
+    spec:
+      containers:
+      - name: flask-app
+        image: nhothuy48cb/flask-app:1.0
+        ports:
+        - containerPort: 80
