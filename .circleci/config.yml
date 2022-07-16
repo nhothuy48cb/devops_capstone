@@ -3,6 +3,38 @@ version: 2.1
 orbs:
   docker: circleci/docker@2.1.2
 
+commands:
+  install-awscli-gettext:
+    description: Install awscli and gettext-base
+    steps:
+      - run:
+          name: Install awscli and gettext-base
+          command: |
+            sudo apt update
+            sudo apt-get install awscli
+            sudo apt-get install gettext-base
+
+  install-aws-iam-authenticator:
+    description: Install aws-iam-authenticator
+    steps:
+      - run:
+          name: Install aws-iam-authenticator
+          command: |
+            curl -o aws-iam-authenticator curl -o aws-iam-authenticator \
+              https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator
+            chmod +x ./aws-iam-authenticator
+            sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+
+  install-kubectl:
+    description: Install kubectl
+    steps:
+      - run:
+          name: Install kubectl
+          command: |
+            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+
 jobs:
   run-lint:
     docker:
@@ -65,24 +97,9 @@ jobs:
       - image: cimg/python:3.7.13
     steps:
       - checkout
-      - run:
-          name: Install awscli and gettext-base
-          command: |
-            sudo apt update
-            sudo apt-get install awscli
-            sudo apt-get install gettext-base
-      - run:
-          name: Install aws-iam-authenticator
-          command: |
-            curl -o aws-iam-authenticator curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
-      - run:
-          name: Install kubectl
-          command: |
-            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            sudo mv ./kubectl /usr/local/bin/kubectl
+      - install-awscli-gettext
+      - install-aws-iam-authenticator
+      - install-kubectl
       - run:
           name: Connect to cluster
           command: |
@@ -102,7 +119,7 @@ jobs:
             # service-green.yaml creates the flask-app-green service
             envsubst < k8s/service-green.yaml | kubectl apply --filename -
 
-            sleep 5
+            sleep 3
             LOAD_BALANCER=$(kubectl get services \
               flask-app-green \
               --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')
