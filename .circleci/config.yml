@@ -4,14 +4,22 @@ orbs:
   docker: circleci/docker@2.1.2
 
 commands:
-  install-awscli-gettext:
-    description: Install awscli and gettext-base
+  install-awscli:
+    description: Install awscli
     steps:
       - run:
-          name: Install awscli and gettext-base
+          name: Install awscli
           command: |
-            sudo apt update
-            sudo apt-get install awscli
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+  install-gettext:
+    description: Install gettext-base
+    steps:
+      - run:
+          name: Install gettext-base
+          command: |
             sudo apt-get install gettext-base
 
   install-aws-iam-authenticator:
@@ -97,7 +105,8 @@ jobs:
       - image: cimg/python:3.7.13
     steps:
       - checkout
-      - install-awscli-gettext
+      - install-awscli
+      - install-gettext
       - install-aws-iam-authenticator
       - install-kubectl
       - run:
@@ -131,12 +140,13 @@ jobs:
     steps:
       - run: echo "A hold job to wait for a manual approval"
 
-  deploy-blue:
+  deploy-new-blue:
     docker:
       - image: cimg/python:3.7.13
     steps:
       - checkout
-      - install-awscli-gettext
+      - install-awscli
+      - install-gettext
       - install-aws-iam-authenticator
       - install-kubectl
       - run:
@@ -151,6 +161,20 @@ jobs:
             echo "LABEL_VERSION: $LABEL_VERSION"
             # flask-app service target now labeled new version
             envsubst < k8s/service.yaml | kubectl apply --filename -
+
+  remove-old-blue:
+    docker:
+      - image: cimg/python:3.7.13
+    steps:
+      - checkout
+      - install-awscli
+      - install-gettext
+      - install-aws-iam-authenticator
+      - install-kubectl
+      - run:
+          name: Connect to cluster
+          command: |
+            aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $CLUSTER_NAME
       - run:
           name: Remove the old version flask-app
           command: |
@@ -176,7 +200,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - deploy-blue
+      - deploy-new-blue
+      - remove-old-blue
       #- deploy-green
       #- wait-manual-approval:
           #type: approval
