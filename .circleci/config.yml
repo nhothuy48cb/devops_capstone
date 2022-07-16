@@ -189,17 +189,15 @@ jobs:
 workflows:
   default:
     jobs:
-      - deploy-new-blue
+      - run-lint
+      - build-and-push-docker-image:
+          requires: [run-lint]
+      - deploy-green:
+          requires: [build-and-push-docker-image]
+      - wait-manual-approval:
+          type: approval
+          requires: [deploy-green]
+      - deploy-new-blue:
+          requires: [wait-manual-approval]
       - remove-old-blue:
           requires: [deploy-new-blue]
-      #- deploy-green
-      #- wait-manual-approval:
-          #type: approval
-          #requires: [deploy-green]
-      #- deploy-blue:
-          #requires: [wait-manual-approval]
-      #- run-lint
-      #- build-and-push-docker-image:
-          #requires: [run-lint]
-      #- deploy:
-          #requires: [build-and-push-docker-image]
