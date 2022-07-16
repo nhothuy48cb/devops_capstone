@@ -165,7 +165,7 @@ jobs:
               echo $each
             done
             echo "-2.0-"
-            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app | grep -v 2-0);
+            for each in $(kubectl get deployments -o jsonpath="{.items[*].metadata.name}" | grep flask-app);
             do
               if $each | grep -v "2-0";
               then
